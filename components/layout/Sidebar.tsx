@@ -12,8 +12,7 @@ import {
   Stethoscope,
   LogOut,
   X,
-  Stethoscope as DoctorIcon,
-  Briefcase,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,7 @@ const ALL_NAV = [
   { href: "/calendar",   label: "Calendar",     icon: Calendar,        roles: ["doctor", "office"] },
   { href: "/bookings",   label: "Appointments", icon: BookOpen,        roles: ["doctor", "office"] },
   { href: "/customers",  label: "Patients",     icon: UserRound,       roles: ["doctor", "office"] },
+  { href: "/billing",    label: "Billing",      icon: Banknote,        roles: ["doctor", "office"] },
   { href: "/analytics",  label: "Analytics",    icon: BarChart3,       roles: ["doctor"]           },
   { href: "/settings",   label: "Settings",     icon: Settings,        roles: ["doctor"]           },
 ] as const;
@@ -73,7 +73,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-30 h-full w-64 bg-white border-r border-gray-100 flex flex-col transition-transform duration-200",
+          "print:hidden fixed top-0 left-0 z-30 h-full w-64 bg-white border-r border-gray-100 flex flex-col transition-transform duration-200",
           "lg:static lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full"
         )}
@@ -99,7 +99,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden h-7 w-7"
+            className="lg:hidden h-9 w-9"
             onClick={onClose}
           >
             <X size={16} />

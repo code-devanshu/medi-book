@@ -4,6 +4,7 @@ import "./globals.css";
 import { BookingProvider } from "@/components/providers/BookingProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { DemoGuideProvider } from "@/components/providers/DemoGuideProvider";
+import { BillingProvider } from "@/components/providers/BillingProvider";
 import { DemoGuide } from "@/components/guide/DemoGuide";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -28,9 +29,11 @@ export default function RootLayout({
         <AuthProvider>
           <DemoGuideProvider>
             <BookingProvider>
-              {children}
-              <DemoGuide />
-              <Toaster richColors position="top-right" />
+              <BillingProvider>
+                {children}
+                <DemoGuide />
+                <Toaster richColors position="top-right" />
+              </BillingProvider>
             </BookingProvider>
           </DemoGuideProvider>
         </AuthProvider>

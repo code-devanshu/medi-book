@@ -35,7 +35,6 @@ import {
   CalendarClock,
   Eye,
   X,
-  ListFilter,
   LayoutList,
   Coffee,
   Phone,
@@ -182,14 +181,14 @@ function AppointmentCard({
   return (
     <div
       className={cn(
-        "bg-white border border-gray-100 border-l-4 rounded-xl p-4 flex items-start gap-4 hover:shadow-md transition-all duration-200 group",
+        "bg-white border border-gray-100 border-l-4 rounded-xl p-3 sm:p-4 flex items-start gap-2 sm:gap-4 hover:shadow-md transition-all duration-200 group",
         statusBorder(booking.status as BookingStatus),
         booking.status === "Cancelled" && "opacity-60",
         booking.status === "Completed" && "bg-gray-50/50"
       )}
     >
-      {/* Time column */}
-      <div className="min-w-[48px] text-center shrink-0">
+      {/* Time column — sm+ only */}
+      <div className="hidden sm:block min-w-[48px] text-center shrink-0">
         <p
           className={cn(
             "text-base font-bold leading-tight",
@@ -209,13 +208,13 @@ function AppointmentCard({
         )}
       </div>
 
-      {/* Divider */}
-      <div className="w-px self-stretch bg-gray-100 shrink-0" />
+      {/* Divider — sm+ only */}
+      <div className="hidden sm:block w-px self-stretch bg-gray-100 shrink-0" />
 
       {/* Avatar */}
       <div
         className={cn(
-          "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
+          "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
           avatarColor(booking.customerName)
         )}
       >
@@ -224,18 +223,38 @@ function AppointmentCard({
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-semibold text-gray-900 text-sm">
-            {booking.customerName}
-          </span>
-          <StatusBadge status={booking.status as BookingStatus} />
-          {isUrgent && !isPast && (
-            <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">
-              {mins === 0 ? "Now" : `${mins} min`}
-            </span>
-          )}
+        {/* Name row: name + status + price on right */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-gray-900 text-sm">
+                {booking.customerName}
+              </span>
+              <StatusBadge status={booking.status as BookingStatus} />
+              {isUrgent && !isPast && (
+                <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">
+                  {mins === 0 ? "Now" : `${mins} min`}
+                </span>
+              )}
+            </div>
+            {/* Mobile: time + duration below name */}
+            <div className="flex items-center gap-1 mt-0.5 sm:hidden">
+              <Timer size={9} className="text-gray-300" />
+              <span className="text-xs text-gray-400">
+                {formatTime(booking.time)} · {booking.duration}m
+              </span>
+              {isUrgent && (
+                <span className="text-[9px] font-bold text-orange-500 uppercase">Soon</span>
+              )}
+            </div>
+          </div>
+          {/* Price — always visible */}
+          <p className="text-sm font-semibold text-gray-900 shrink-0">
+            ₹{booking.price.toLocaleString("en-IN")}
+          </p>
         </div>
 
+        {/* Service pill */}
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           <span
             className={cn(
@@ -247,69 +266,62 @@ function AppointmentCard({
           </span>
         </div>
 
-        <div className="flex items-center gap-3 mt-2 flex-wrap">
-          {booking.notes && (
+        {/* Bottom row: phone (+ notes on sm+) + actions */}
+        <div className="flex items-center justify-between gap-2 mt-2">
+          <div className="flex items-center gap-3 flex-wrap min-w-0">
+            {booking.notes && (
+              <span className="hidden sm:flex items-center gap-1 text-xs text-gray-400">
+                <FileText size={10} className="shrink-0" />
+                <span className="truncate max-w-[180px]">{booking.notes}</span>
+              </span>
+            )}
             <span className="flex items-center gap-1 text-xs text-gray-400">
-              <FileText size={10} className="shrink-0" />
-              <span className="truncate max-w-[220px]">{booking.notes}</span>
+              <Phone size={10} className="shrink-0" />
+              {booking.phone}
             </span>
-          )}
-          <span className="flex items-center gap-1 text-xs text-gray-400">
-            <Phone size={10} className="shrink-0" />
-            {booking.phone}
-          </span>
-        </div>
-      </div>
+          </div>
 
-      {/* Right: price + actions */}
-      <div className="shrink-0 flex flex-col items-end gap-2">
-        <p className="text-sm font-semibold text-gray-900">
-          ₹{booking.price.toLocaleString("en-IN")}
-        </p>
+          {/* Quick actions */}
+          <div className="flex items-center gap-1 shrink-0">
+            <Link href={`/bookings/${booking.id}`}>
+              <button
+                title="View details"
+                className="h-8 w-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors"
+              >
+                <Eye size={13} />
+              </button>
+            </Link>
 
-        {/* Quick actions — contextual per status */}
-        <div className="flex items-center gap-1">
-          <Link href={`/bookings/${booking.id}`}>
-            <button
-              title="View details"
-              className="h-7 w-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors"
-            >
-              <Eye size={13} />
-            </button>
-          </Link>
+            {booking.status === "Pending" && (
+              <button
+                title="Confirm appointment"
+                onClick={() => onConfirm(booking.id)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-600 transition-colors"
+              >
+                <UserCheck size={13} />
+              </button>
+            )}
 
-          {/* Pending → Confirm button */}
-          {booking.status === "Pending" && (
-            <button
-              title="Confirm appointment"
-              onClick={() => onConfirm(booking.id)}
-              className="h-7 w-7 flex items-center justify-center rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-600 transition-colors"
-            >
-              <UserCheck size={13} />
-            </button>
-          )}
+            {booking.status === "Confirmed" && (
+              <button
+                title="Mark as completed"
+                onClick={() => onComplete(booking.id)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+              >
+                <CheckCircle2 size={13} />
+              </button>
+            )}
 
-          {/* Confirmed → Complete button */}
-          {booking.status === "Confirmed" && (
-            <button
-              title="Mark as completed"
-              onClick={() => onComplete(booking.id)}
-              className="h-7 w-7 flex items-center justify-center rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
-            >
-              <CheckCircle2 size={13} />
-            </button>
-          )}
-
-          {/* Pending or Confirmed → Cancel button */}
-          {(booking.status === "Pending" || booking.status === "Confirmed") && (
-            <button
-              title="Cancel booking"
-              onClick={() => onCancel(booking.id)}
-              className="h-7 w-7 flex items-center justify-center rounded-lg bg-red-50 hover:bg-red-100 text-red-400 transition-colors"
-            >
-              <X size={13} />
-            </button>
-          )}
+            {(booking.status === "Pending" || booking.status === "Confirmed") && (
+              <button
+                title="Cancel booking"
+                onClick={() => onCancel(booking.id)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg bg-red-50 hover:bg-red-100 text-red-400 transition-colors"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -532,7 +544,7 @@ export default function BookingsPage() {
           <Skeleton className="h-7 w-40" />
           <Skeleton className="h-8 w-28" />
         </div>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
@@ -554,7 +566,8 @@ export default function BookingsPage() {
               Appointments
             </h1>
             <p className="text-sm text-gray-400 mt-0.5">
-              {format(new Date(), "EEEE, d MMMM yyyy")}
+              <span className="hidden sm:inline">{format(new Date(), "EEEE, d MMMM yyyy")}</span>
+              <span className="sm:hidden">{format(new Date(), "EEE, d MMM")}</span>
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -563,26 +576,26 @@ export default function BookingsPage() {
               <button
                 onClick={() => setView("schedule")}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
                   view === "schedule"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 )}
               >
                 <CalendarDays size={13} />
-                Schedule
+                <span className="hidden sm:inline">Schedule</span>
               </button>
               <button
                 onClick={() => setView("list")}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
                   view === "list"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 )}
               >
                 <LayoutList size={13} />
-                List
+                <span className="hidden sm:inline">List</span>
               </button>
             </div>
             <Link href="/bookings/new">
@@ -590,7 +603,8 @@ export default function BookingsPage() {
                 size="sm"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8 px-3 gap-1.5"
               >
-                <Plus size={13} /> New Booking
+                <Plus size={13} />
+                <span className="hidden sm:inline">New Booking</span>
               </Button>
             </Link>
           </div>

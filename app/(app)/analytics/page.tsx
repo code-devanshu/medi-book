@@ -242,14 +242,14 @@ export default function AnalyticsPage() {
           Service Revenue Breakdown
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-105 text-sm">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left text-xs font-medium text-gray-500 pb-2">Service</th>
                 <th className="text-right text-xs font-medium text-gray-500 pb-2">Bookings</th>
                 <th className="text-right text-xs font-medium text-gray-500 pb-2">Revenue</th>
                 <th className="text-right text-xs font-medium text-gray-500 pb-2 pr-2">Share</th>
-                <th className="text-left text-xs font-medium text-gray-500 pb-2 pl-4 w-40">Bar</th>
+                <th className="text-left text-xs font-medium text-gray-500 pb-2 pl-4 w-40 hidden sm:table-cell">Bar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
                     <td className="py-2.5 text-right text-gray-500">{s.bookings}</td>
                     <td className="py-2.5 text-right font-medium text-gray-900">₹{s.revenue.toLocaleString("en-IN")}</td>
                     <td className="py-2.5 text-right text-gray-500 pr-2">{pct}%</td>
-                    <td className="py-2.5 pl-4">
+                    <td className="py-2.5 pl-4 hidden sm:table-cell">
                       <div className="w-full bg-gray-100 rounded-full h-1.5">
                         <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: `${(s.revenue / maxRev) * 100}%` }} />
                       </div>

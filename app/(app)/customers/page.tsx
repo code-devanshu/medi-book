@@ -62,81 +62,101 @@ export default function CustomersPage() {
       </div>
 
       <div data-guide="patients-table" className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-100 bg-gray-50/60">
-              <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
-                Customer
-              </th>
-              <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
-                Phone
-              </th>
-              <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
-                Total Bookings
-              </th>
-              <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
-                Last Booking
-              </th>
-              <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">
-                Total Spent
-              </th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={6}>
-                  <EmptyState
-                    icon={UserRound}
-                    title={search ? "No patients match your search" : "No patients yet"}
-                    description={search ? `Try a different name or email.` : "Patients will appear here after their first booking."}
-                  />
-                </td>
+
+        {/* Mobile card layout */}
+        <div className="sm:hidden divide-y divide-gray-50">
+          {filtered.length === 0 ? (
+            <EmptyState
+              icon={UserRound}
+              title={search ? "No patients match your search" : "No patients yet"}
+              description={search ? "Try a different name or email." : "Patients will appear here after their first booking."}
+            />
+          ) : (
+            filtered.map((c) => (
+              <Link
+                key={c.id}
+                href={`/customers/${c.id}`}
+                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50/60 transition-colors"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-xs font-semibold shrink-0">
+                    {c.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900 text-sm truncate">{c.name}</p>
+                    <p className="text-xs text-gray-400 truncate">{c.phone} · {c.totalBookings} bookings</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0 ml-3">
+                  <p className="text-sm font-medium text-gray-900">₹{c.totalSpent.toLocaleString("en-IN")}</p>
+                  <p className="text-xs text-gray-400">{format(new Date(c.lastBooking + "T00:00:00"), "d MMM")}</p>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+
+        {/* Desktop table — sm+ */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/60">
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Customer</th>
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Phone</th>
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Total Bookings</th>
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Last Booking</th>
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Total Spent</th>
+                <th className="px-4 py-3" />
               </tr>
-            ) : (
-              filtered.map((c) => (
-                <tr key={c.id} className="hover:bg-gray-50/60 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-xs font-semibold shrink-0">
-                        {c.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .slice(0, 2)
-                          .join("")}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{c.name}</p>
-                        <p className="text-xs text-gray-400">{c.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-600 text-sm">{c.phone}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
-                      {c.totalBookings}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-gray-500 text-sm">
-                    {format(new Date(c.lastBooking + "T00:00:00"), "MMM d, yyyy")}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">
-                    ₹{c.totalSpent.toLocaleString("en-IN")}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/customers/${c.id}`}
-                      className="text-gray-400 hover:text-indigo-600 transition-colors"
-                    >
-                      <ChevronRight size={16} />
-                    </Link>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={6}>
+                    <EmptyState
+                      icon={UserRound}
+                      title={search ? "No patients match your search" : "No patients yet"}
+                      description={search ? "Try a different name or email." : "Patients will appear here after their first booking."}
+                    />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filtered.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50/60 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-xs font-semibold shrink-0">
+                          {c.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{c.name}</p>
+                          <p className="text-xs text-gray-400">{c.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">{c.phone}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
+                        {c.totalBookings}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 text-sm">
+                      {format(new Date(c.lastBooking + "T00:00:00"), "MMM d, yyyy")}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      ₹{c.totalSpent.toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link href={`/customers/${c.id}`} className="text-gray-400 hover:text-indigo-600 transition-colors">
+                        <ChevronRight size={16} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

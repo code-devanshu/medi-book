@@ -75,7 +75,7 @@ export default function CustomerDetailPage({
       {/* Profile card */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-lg font-semibold flex-shrink-0">
+          <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-lg font-semibold shrink-0">
             {customer.name
               .split(" ")
               .map((n) => n[0])

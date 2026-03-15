@@ -13,11 +13,11 @@ export function DemoGuideProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
-  // Auto-open on the login page if tour hasn't been dismissed yet
+  // Auto-open on the dashboard (first page after login) if tour hasn't been dismissed
   useEffect(() => {
     const dismissed = localStorage.getItem(GUIDE_KEY);
-    if (!dismissed && pathname === "/login") {
-      const t = setTimeout(() => setIsOpen(true), 600);
+    if (!dismissed && pathname === "/dashboard") {
+      const t = setTimeout(() => setIsOpen(true), 800);
       return () => clearTimeout(t);
     }
   }, [pathname]);
@@ -30,13 +30,13 @@ export function DemoGuideProvider({ children }: { children: ReactNode }) {
     [router]
   );
 
-  // "Take a tour" from topbar — always restarts from step 1 (login)
+  // "Take a tour" from topbar — restarts from step 1 (dashboard)
   const startGuide = useCallback(() => {
     localStorage.removeItem(GUIDE_KEY);
     setCurrentStep(1);
     setCompletedSteps([]);
     setIsOpen(true);
-    router.push("/login");
+    router.push("/dashboard");
   }, [router]);
 
   const dismissGuide = useCallback(() => {

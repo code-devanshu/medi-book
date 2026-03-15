@@ -10,23 +10,15 @@ import {
 } from "@/data/generateBookings";
 
 export function BookingProvider({ children }: { children: ReactNode }) {
-  // Start with static mockBookings so the first SSR/paint has real data,
-  // then swap to localStorage-backed dynamic data on the client.
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
-  const [hydrated, setHydrated] = useState(false);
-
-  // On mount: wipe stale localStorage and load/generate today-relative data
-  useEffect(() => {
-    const loaded = loadOrGenerateBookings();
-    setBookings(loaded);
-    setHydrated(true);
-  }, []);
+  const [bookings, setBookings] = useState<Booking[]>(() => {
+    if (typeof window === "undefined") return mockBookings;
+    return loadOrGenerateBookings();
+  });
 
   // Keep localStorage in sync after every mutation
   useEffect(() => {
-    if (!hydrated) return;
     persistBookings(bookings);
-  }, [bookings, hydrated]);
+  }, [bookings]);
 
   const addBooking = (booking: Booking) => {
     setBookings((prev) => [booking, ...prev]);

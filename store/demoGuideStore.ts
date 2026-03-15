@@ -15,26 +15,16 @@ export interface GuideStep {
 export const GUIDE_STEPS: GuideStep[] = [
   {
     id: 1,
-    title: "Welcome to MediBook! 👋",
-    description:
-      "MediBook is a clinic appointment management system for doctors, pathology labs, and physiotherapy centres. Use the demo credentials below to sign in and explore the full app.",
-    path: "/login",
-    target: "login-form",
-    actionLabel: "Sign in using any demo credential below",
-    position: "right",
-  },
-  {
-    id: 2,
     title: "Clinic Dashboard",
     description:
-      "After login you land here. All key metrics — total appointments, today's count, confirmed, cancelled, and total revenue — are shown at a glance.",
+      "Welcome! You're now inside MediBook. This dashboard gives you all key metrics at a glance — total appointments, today's count, confirmed, cancelled, and total revenue.",
     path: "/dashboard",
     target: "dashboard-stats",
     actionLabel: "Review the stats cards above",
     position: "bottom",
   },
   {
-    id: 3,
+    id: 2,
     title: "Live Charts",
     description:
       "Track daily booking trends, status distribution across Confirmed / Pending / Cancelled, and weekly revenue vs target — all updating with your real data.",
@@ -44,7 +34,7 @@ export const GUIDE_STEPS: GuideStep[] = [
     position: "top",
   },
   {
-    id: 4,
+    id: 3,
     title: "Appointments List",
     description:
       "Every appointment is listed here with full details. You can search by patient name or booking ID, filter by status, and sort by date.",
@@ -54,7 +44,7 @@ export const GUIDE_STEPS: GuideStep[] = [
     position: "bottom",
   },
   {
-    id: 5,
+    id: 4,
     title: "Create a New Appointment",
     description:
       "Book an appointment for any patient — pick their service (General Physician, Pathology, Physiotherapy, etc.), date, and time slot. The booking is added instantly.",
@@ -64,7 +54,7 @@ export const GUIDE_STEPS: GuideStep[] = [
     position: "right",
   },
   {
-    id: 6,
+    id: 5,
     title: "Calendar View",
     description:
       "See all appointments plotted on a monthly calendar. Click any day to expand the list of bookings for that day with status colour codes.",
@@ -74,13 +64,23 @@ export const GUIDE_STEPS: GuideStep[] = [
     position: "bottom",
   },
   {
-    id: 7,
+    id: 6,
     title: "Patient Records",
     description:
       "All registered patients are listed with their contact details, total visits, and total spend. Click a patient row to view their full appointment history.",
     path: "/customers",
     target: "patients-table",
     actionLabel: "Click on any patient to view their profile",
+    position: "bottom",
+  },
+  {
+    id: 7,
+    title: "Billing & Invoices",
+    description:
+      "Generate professional invoices for patients — search a patient, auto-populate line items from their latest booking, add a discount, and produce a printable invoice in one click.",
+    path: "/billing",
+    target: "billing-list",
+    actionLabel: "Click 'New Invoice' to create your first invoice",
     position: "bottom",
   },
   {

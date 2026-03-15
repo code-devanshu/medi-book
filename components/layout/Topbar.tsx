@@ -93,11 +93,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
     .toUpperCase() ?? "??";
 
   return (
-    <header className="sticky top-0 z-10 h-16 bg-white border-b border-gray-100 flex items-center px-4 lg:px-6 gap-4">
+    <header className="print:hidden sticky top-0 z-10 h-16 bg-white border-b border-gray-100 flex items-center px-4 lg:px-6 gap-4">
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden h-8 w-8 text-gray-500"
+        className="lg:hidden h-10 w-10 text-gray-500"
         onClick={onMenuClick}
       >
         <Menu size={18} />
@@ -155,7 +155,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           </Button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-11 w-80 bg-white rounded-xl border border-gray-100 shadow-xl z-50 overflow-hidden">
+            <div className="fixed right-4 top-16 sm:absolute sm:right-0 sm:top-11 w-[calc(100vw-2rem)] max-w-sm bg-white rounded-xl border border-gray-100 shadow-xl z-50 overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <p className="text-sm font-semibold text-gray-900">Notifications</p>
                 <span className="text-xs text-gray-400">{NOTIFICATIONS.length} total</span>
@@ -197,7 +197,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </div>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-semibold cursor-pointer">
+        <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-semibold cursor-pointer shrink-0">
           {initials}
         </div>
       </div>

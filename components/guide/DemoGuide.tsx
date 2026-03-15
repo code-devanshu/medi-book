@@ -68,8 +68,6 @@ export function DemoGuide() {
 
   // Re-run spotlight after page navigation settles
   useEffect(() => {
-    setSpotlight(null);
-    setVisible(false);
     if (!isOpen) return;
 
     const t1 = setTimeout(() => {
@@ -77,7 +75,11 @@ export function DemoGuide() {
       setVisible(true);
     }, 350);
 
-    return () => clearTimeout(t1);
+    return () => {
+      clearTimeout(t1);
+      setSpotlight(null);
+      setVisible(false);
+    };
   }, [currentStep, pathname, isOpen, updateSpotlight]);
 
   // Update on resize / scroll

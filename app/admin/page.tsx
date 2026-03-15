@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { DEMO_SLOTS, TOTAL_DEMO_SLOTS } from "@/lib/demoAccounts";
 import {
   Copy, Check, Lock, ShieldCheck, ChevronDown, ChevronUp,
@@ -36,35 +36,35 @@ const defaultRecords = (): SlotRecord[] =>
   }));
 
 export default function AdminPage() {
-  const [isLocalhost, setIsLocalhost] = useState<boolean | null>(null);
-  const [authed, setAuthed] = useState(false);
+  const [isLocalhost] = useState<boolean | null>(() => {
+    if (typeof window === "undefined") return null;
+    const host = window.location.hostname;
+    return host === "localhost" || host === "127.0.0.1";
+  });
+  const [authed, setAuthed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("medibook_admin_authed") === "true";
+  });
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState(false);
-  const [records, setRecords] = useState<SlotRecord[]>(defaultRecords());
+  const [records, setRecords] = useState<SlotRecord[]>(() => {
+    if (typeof window === "undefined") return defaultRecords();
+    const isAuthed = sessionStorage.getItem("medibook_admin_authed") === "true";
+    if (!isAuthed) return defaultRecords();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved: SlotRecord[] = JSON.parse(raw);
+        return defaultRecords().map((d) => saved.find((s) => s.slot === d.slot) ?? d);
+      }
+    } catch {}
+    return defaultRecords();
+  });
   const [expandedSlot, setExpandedSlot] = useState<number | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<SlotRecord>>({});
   const [editErrors, setEditErrors] = useState<{ assignedTo?: string; phone?: string }>({});
-
-  useEffect(() => {
-    const host = window.location.hostname;
-    setIsLocalhost(host === "localhost" || host === "127.0.0.1");
-    if (sessionStorage.getItem("medibook_admin_authed") === "true") {
-      setAuthed(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!authed) return;
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved: SlotRecord[] = JSON.parse(raw);
-        setRecords(defaultRecords().map((d) => saved.find((s) => s.slot === d.slot) ?? d));
-      }
-    } catch {}
-  }, [authed]);
 
   const saveRecords = (updated: SlotRecord[]) => {
     setRecords(updated);
@@ -77,6 +77,13 @@ export default function AdminPage() {
       sessionStorage.setItem("medibook_admin_authed", "true");
       setAuthed(true);
       setPasswordError(false);
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved: SlotRecord[] = JSON.parse(raw);
+          setRecords(defaultRecords().map((d) => saved.find((s) => s.slot === d.slot) ?? d));
+        }
+      } catch {}
     } else setPasswordError(true);
   };
 

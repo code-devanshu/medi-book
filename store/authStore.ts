@@ -28,8 +28,8 @@ export const MOCK_CREDENTIALS: (CurrentUser & { password: string })[] = [
 
 /** Routes each role can access */
 export const ROLE_ROUTES: Record<UserRole, string[]> = {
-  doctor: ["/dashboard", "/calendar", "/bookings", "/customers", "/analytics", "/settings"],
-  office: ["/calendar", "/bookings", "/customers"],
+  doctor: ["/dashboard", "/calendar", "/bookings", "/customers", "/analytics", "/billing", "/settings"],
+  office: ["/calendar", "/bookings", "/customers", "/billing"],
 };
 
 /** Where to land after login */

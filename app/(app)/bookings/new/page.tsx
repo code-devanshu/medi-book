@@ -424,7 +424,7 @@ export default function NewBookingPage() {
 
               {/* Category tabs */}
               <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map(({ name, Icon, tab, dot }) => (
+                {CATEGORIES.map(({ name, Icon, tab }) => (
                   <button
                     key={name}
                     onClick={() => setActiveCategory(name)}

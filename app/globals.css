@@ -127,3 +127,23 @@
     @apply font-sans;
   }
 }
+
+@media print {
+  /* Force background colors and images to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Reset html/body so content is not clipped */
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    background: white !important;
+  }
+
+  /* Prevent page breaks inside invoice rows */
+  tr, .print-no-break {
+    break-inside: avoid;
+  }
+}

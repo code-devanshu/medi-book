@@ -21,7 +21,7 @@ import { useBookings } from "@/store/bookingStore";
 import { Booking, BookingStatus } from "@/types/booking";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import Link from "next/link";
-import { cn, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const statusDot: Record<BookingStatus, string> = {
@@ -108,11 +108,11 @@ export default function CalendarPage() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 px-5 py-2 bg-gray-50 border-b border-gray-100">
+        <div className="grid grid-cols-2 sm:flex sm:items-center sm:gap-4 px-5 py-2 bg-gray-50 border-b border-gray-100 gap-x-4 gap-y-1.5">
           {(["Confirmed", "Pending", "Cancelled", "Completed"] as BookingStatus[]).map(
             (s) => (
               <div key={s} className="flex items-center gap-1.5 text-xs text-gray-500">
-                <span className={cn("w-2 h-2 rounded-full", statusDot[s])} />
+                <span className={cn("w-2 h-2 rounded-full shrink-0", statusDot[s])} />
                 {s}
               </div>
             )
@@ -148,7 +148,7 @@ export default function CalendarPage() {
                   )
                 }
                 className={cn(
-                  "min-h-[80px] p-2 border-b border-r border-gray-50 cursor-pointer transition-colors",
+                  "min-h-15 sm:min-h-20 p-1 sm:p-2 border-b border-r border-gray-50 cursor-pointer transition-colors",
                   !isCurrentMonth && "bg-gray-50/50",
                   isSelected && "bg-indigo-50",
                   !isSelected && isCurrentMonth && "hover:bg-gray-50"
@@ -156,7 +156,7 @@ export default function CalendarPage() {
               >
                 <div
                   className={cn(
-                    "w-6 h-6 flex items-center justify-center rounded-full text-xs mb-1",
+                    "w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full text-[11px] sm:text-xs mb-1",
                     todayDay
                       ? "bg-indigo-600 text-white font-semibold"
                       : isCurrentMonth
@@ -168,28 +168,35 @@ export default function CalendarPage() {
                 </div>
                 {dayBookings.length > 0 && (
                   <div className="space-y-0.5">
-                    {dayBookings.slice(0, 3).map((b) => (
-                      <div
-                        key={b.id}
-                        className={cn(
-                          "flex items-center gap-1 text-[10px] rounded px-1 py-0.5 truncate",
-                          b.status === "Confirmed" && "bg-emerald-50 text-emerald-700",
-                          b.status === "Pending" && "bg-amber-50 text-amber-700",
-                          b.status === "Cancelled" && "bg-red-50 text-red-600",
-                          b.status === "Completed" && "bg-blue-50 text-blue-700"
-                        )}
-                      >
-                        <span
-                          className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusDot[b.status])}
-                        />
-                        <span className="truncate">{b.customerName.split(" ")[0]}</span>
-                      </div>
-                    ))}
-                    {dayBookings.length > 3 && (
-                      <p className="text-[10px] text-gray-400 px-1">
-                        +{dayBookings.length - 3} more
-                      </p>
-                    )}
+                    {/* On mobile show only dots, on sm+ show name labels */}
+                    <div className="flex flex-wrap gap-0.5 sm:hidden">
+                      {dayBookings.slice(0, 3).map((b) => (
+                        <span key={b.id} className={cn("w-1.5 h-1.5 rounded-full", statusDot[b.status])} />
+                      ))}
+                      {dayBookings.length > 3 && (
+                        <span className="text-[9px] text-gray-400">+{dayBookings.length - 3}</span>
+                      )}
+                    </div>
+                    <div className="hidden sm:block space-y-0.5">
+                      {dayBookings.slice(0, 3).map((b) => (
+                        <div
+                          key={b.id}
+                          className={cn(
+                            "flex items-center gap-1 text-[10px] rounded px-1 py-0.5 truncate",
+                            b.status === "Confirmed" && "bg-emerald-50 text-emerald-700",
+                            b.status === "Pending" && "bg-amber-50 text-amber-700",
+                            b.status === "Cancelled" && "bg-red-50 text-red-600",
+                            b.status === "Completed" && "bg-blue-50 text-blue-700"
+                          )}
+                        >
+                          <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", statusDot[b.status])} />
+                          <span className="truncate">{b.customerName.split(" ")[0]}</span>
+                        </div>
+                      ))}
+                      {dayBookings.length > 3 && (
+                        <p className="text-[10px] text-gray-400 px-1">+{dayBookings.length - 3} more</p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

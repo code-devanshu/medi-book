@@ -1,32 +1,31 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   AuthContext,
   CurrentUser,
   MOCK_CREDENTIALS,
-  ROLE_DEFAULT,
 } from "@/store/authStore";
 
 const AUTH_KEY = "medibook_auth";
 const USER_KEY = "medibook_user";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const router = useRouter();
-
-  // Rehydrate from localStorage on mount
-  useEffect(() => {
-    if (localStorage.getItem(AUTH_KEY) === "true") {
-      setIsAuthenticated(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(AUTH_KEY) === "true";
+  });
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
       const raw = localStorage.getItem(USER_KEY);
-      if (raw) {
-        try { setCurrentUser(JSON.parse(raw)); } catch {}
-      }
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
     }
-  }, []);
+  });
+  const router = useRouter();
 
   const login = async (email: string, password: string): Promise<boolean> => {
     await new Promise((r) => setTimeout(r, 900));

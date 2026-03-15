@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Save, Building2, Clock, Globe, Bell, Shield, AlertCircle } from "lucide-react";
+import {
+  Save,
+  Building2,
+  Clock,
+  Globe,
+  Bell,
+  Shield,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SETTINGS_KEY = "medibook_settings";
@@ -33,21 +41,23 @@ const DEFAULT_SETTINGS = {
 
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  const [settings, setSettings] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_SETTINGS;
     try {
       const raw = localStorage.getItem(SETTINGS_KEY);
-      if (raw) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(raw) });
-    } catch {}
-  }, []);
+      return raw
+        ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
+        : DEFAULT_SETTINGS;
+    } catch {
+      return DEFAULT_SETTINGS;
+    }
+  });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const field = (name: string, value: string | boolean | null) =>
-    setSettings((prev) => ({ ...prev, [name]: value ?? "" }));
+    setSettings((prev: any) => ({ ...prev, [name]: value ?? "" }));
 
   function validateField(name: string, value: string): string {
     if (name === "businessName") {
@@ -61,7 +71,8 @@ export default function SettingsPage() {
     if (name === "businessPhone") {
       if (!value.trim()) return "Phone is required";
       const stripped = value.replace(/[\s\-]/g, "");
-      if (!/^(\+91)?[6-9]\d{9}$/.test(stripped)) return "Enter a valid 10-digit mobile number";
+      if (!/^(\+91)?[6-9]\d{9}$/.test(stripped))
+        return "Enter a valid 10-digit mobile number";
     }
     if (name === "openTime") {
       if (!value.trim()) return "Opening time is required";
@@ -89,18 +100,27 @@ export default function SettingsPage() {
     }
     // Re-validate closeTime if openTime changes and closeTime is touched
     if (name === "openTime" && touched.closeTime) {
-      const closeErr = settings.closeTime && settings.closeTime <= value
-        ? "Closing time must be after opening time"
-        : "";
+      const closeErr =
+        settings.closeTime && settings.closeTime <= value
+          ? "Closing time must be after opening time"
+          : "";
       setErrors((prev) => ({ ...prev, closeTime: closeErr }));
     }
   }
 
   const handleSave = async () => {
     // Mark all validated fields as touched
-    const allFields = ["businessName", "businessEmail", "businessPhone", "openTime", "closeTime"];
+    const allFields = [
+      "businessName",
+      "businessEmail",
+      "businessPhone",
+      "openTime",
+      "closeTime",
+    ];
     const newTouched: Record<string, boolean> = {};
-    allFields.forEach((f) => { newTouched[f] = true; });
+    allFields.forEach((f) => {
+      newTouched[f] = true;
+    });
     setTouched((prev) => ({ ...prev, ...newTouched }));
 
     // Validate all fields
@@ -139,39 +159,60 @@ export default function SettingsPage() {
         description="Your business details shown to customers"
       >
         <div className="space-y-4">
-          <FieldRow label="Business Name" error={touched.businessName ? errors.businessName : undefined}>
+          <FieldRow
+            label="Business Name"
+            error={touched.businessName ? errors.businessName : undefined}
+          >
             <Input
               value={settings.businessName}
-              onChange={(e) => handleFieldChange("businessName", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange("businessName", e.target.value)
+              }
               onBlur={(e) => handleBlur("businessName", e.target.value)}
               className={cn(
                 "h-9 text-sm border-gray-200",
-                touched.businessName && errors.businessName && "border-red-300 focus-visible:ring-red-300"
+                touched.businessName &&
+                  errors.businessName &&
+                  "border-red-300 focus-visible:ring-red-300",
               )}
             />
           </FieldRow>
-          <div className="grid grid-cols-2 gap-4">
-            <FieldRow label="Email" error={touched.businessEmail ? errors.businessEmail : undefined}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FieldRow
+              label="Email"
+              error={touched.businessEmail ? errors.businessEmail : undefined}
+            >
               <Input
                 type="email"
                 value={settings.businessEmail}
-                onChange={(e) => handleFieldChange("businessEmail", e.target.value)}
+                onChange={(e) =>
+                  handleFieldChange("businessEmail", e.target.value)
+                }
                 onBlur={(e) => handleBlur("businessEmail", e.target.value)}
                 className={cn(
                   "h-9 text-sm border-gray-200",
-                  touched.businessEmail && errors.businessEmail && "border-red-300 focus-visible:ring-red-300"
+                  touched.businessEmail &&
+                    errors.businessEmail &&
+                    "border-red-300 focus-visible:ring-red-300",
                 )}
               />
             </FieldRow>
-            <FieldRow label="Phone" error={touched.businessPhone ? errors.businessPhone : undefined}>
+            <FieldRow
+              label="Phone"
+              error={touched.businessPhone ? errors.businessPhone : undefined}
+            >
               <Input
                 value={settings.businessPhone}
-                onChange={(e) => handleFieldChange("businessPhone", e.target.value)}
+                onChange={(e) =>
+                  handleFieldChange("businessPhone", e.target.value)
+                }
                 onBlur={(e) => handleBlur("businessPhone", e.target.value)}
                 maxLength={10}
                 className={cn(
                   "h-9 text-sm border-gray-200",
-                  touched.businessPhone && errors.businessPhone && "border-red-300 focus-visible:ring-red-300"
+                  touched.businessPhone &&
+                    errors.businessPhone &&
+                    "border-red-300 focus-visible:ring-red-300",
                 )}
               />
             </FieldRow>
@@ -205,8 +246,11 @@ export default function SettingsPage() {
               </SelectContent>
             </Select>
           </FieldRow>
-          <div className="grid grid-cols-2 gap-4">
-            <FieldRow label="Opening Time" error={touched.openTime ? errors.openTime : undefined}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FieldRow
+              label="Opening Time"
+              error={touched.openTime ? errors.openTime : undefined}
+            >
               <Input
                 type="time"
                 value={settings.openTime}
@@ -214,11 +258,16 @@ export default function SettingsPage() {
                 onBlur={(e) => handleBlur("openTime", e.target.value)}
                 className={cn(
                   "h-9 text-sm border-gray-200 w-36",
-                  touched.openTime && errors.openTime && "border-red-300 focus-visible:ring-red-300"
+                  touched.openTime &&
+                    errors.openTime &&
+                    "border-red-300 focus-visible:ring-red-300",
                 )}
               />
             </FieldRow>
-            <FieldRow label="Closing Time" error={touched.closeTime ? errors.closeTime : undefined}>
+            <FieldRow
+              label="Closing Time"
+              error={touched.closeTime ? errors.closeTime : undefined}
+            >
               <Input
                 type="time"
                 value={settings.closeTime}
@@ -226,7 +275,9 @@ export default function SettingsPage() {
                 onBlur={(e) => handleBlur("closeTime", e.target.value)}
                 className={cn(
                   "h-9 text-sm border-gray-200 w-36",
-                  touched.closeTime && errors.closeTime && "border-red-300 focus-visible:ring-red-300"
+                  touched.closeTime &&
+                    errors.closeTime &&
+                    "border-red-300 focus-visible:ring-red-300",
                 )}
               />
             </FieldRow>
@@ -255,15 +306,11 @@ export default function SettingsPage() {
                 <SelectItem value="Asia/Kolkata">
                   India (IST, UTC+5:30)
                 </SelectItem>
-                <SelectItem value="Asia/Dubai">
-                  Dubai (GST, UTC+4)
-                </SelectItem>
+                <SelectItem value="Asia/Dubai">Dubai (GST, UTC+4)</SelectItem>
                 <SelectItem value="Asia/Singapore">
                   Singapore (SGT, UTC+8)
                 </SelectItem>
-                <SelectItem value="America/New_York">
-                  New York (ET)
-                </SelectItem>
+                <SelectItem value="America/New_York">New York (ET)</SelectItem>
                 <SelectItem value="America/Los_Angeles">
                   Los Angeles (PT)
                 </SelectItem>
